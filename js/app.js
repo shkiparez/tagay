@@ -31,11 +31,34 @@ async function copy(text) {
     ta.remove(); return ok;
   }
 }
+// личная ссылка на чат клиники (max.ru/u/…); пока её нет — показываем инструкцию, а не страницу скачивания
+const maxChat = () => { try { const u = new URL(SITE.max); return u.pathname.length > 1 ? SITE.max : ""; } catch (e) { return ""; } };
 async function sendMax(text) {
-  const w = window.open(SITE.max, "_blank");
+  const link = maxChat();
+  if (link) {
+    const w = window.open(link, "_blank");
+    const ok = await copy(text);
+    if (!w) location.href = link;
+    toast(ok ? "Текст скопирован — вставьте его в чат и отправьте." : "Напишите нам в открывшемся чате.");
+    return;
+  }
   const ok = await copy(text);
-  if (!w) location.href = SITE.max;
-  toast(ok ? "Текст скопирован — вставьте его в чат с клиникой в Max и отправьте." : `Откройте Max и напишите нам на номер ${SITE.phoneText}.`);
+  let d = $("#maxHelp");
+  if (!d) {
+    document.body.insertAdjacentHTML("beforeend", `<div class="modal" id="maxHelp" role="dialog" aria-modal="true" style="align-items:center">
+      <div class="bform" style="max-width:440px"><button class="m-close" aria-label="Закрыть">✕</button>
+      <h3>Отправка в Max</h3><p class="sub mh-st"></p>
+      <ol class="how" style="margin:6px 0 22px"><li>Откройте приложение Max</li><li><span>Найдите нас по номеру <b style="white-space:nowrap">${SITE.phoneText}</b></span></li><li>Вставьте текст и отправьте</li></ol>
+      <div class="send"><button type="button" class="btn btn-max mh-copy">${IC.max}Скопировать текст</button><button type="button" class="btn btn-ghost mh-phone">Скопировать номер</button></div>
+      <p class="f-hint">Удобнее WhatsApp? Там сообщение откроется сразу.</p></div></div>`);
+    d = $("#maxHelp");
+    const close = () => { d.classList.remove("show"); document.body.classList.remove("lock"); };
+    $(".m-close", d).onclick = close; d.onclick = e => { if (e.target === d) close(); };
+    $(".mh-phone", d).onclick = async () => toast(await copy(SITE.phoneText) ? "Номер скопирован" : SITE.phoneText);
+  }
+  $(".mh-st", d).textContent = ok ? "Текст заявки уже скопирован ✓" : "Скопируйте текст кнопкой ниже.";
+  $(".mh-copy", d).onclick = async () => toast(await copy(text) ? "Текст скопирован" : "Не удалось скопировать");
+  d.classList.add("show"); document.body.classList.add("lock");
 }
 
 /* ---------- карточки */
