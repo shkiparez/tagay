@@ -76,8 +76,24 @@ function picker(el, startId) {
 
 /* ---------- форма записи (WhatsApp / Max) */
 function bookForm(root, pre = {}) {
-  const today = new Date(); today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-  const st = { service: pre.service || "", time: "" };
+  const st = { service: pre.service || "", day: -1, time: "" };
+  // ближайшие 14 дней по новосибирскому времени
+  const WD = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"], MON = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+  const MONF = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+  const base = new Date(Date.now() + 7 * 3600e3);
+  const days = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate() + i));
+    const wd = d.getUTCDay();
+    return { wd: wd || 7, top: i === 0 ? "сегодня" : i === 1 ? "завтра" : WD[wd], num: d.getUTCDate(), mon: MON[d.getUTCMonth()],
+      full: `${WD[wd]}, ${d.getUTCDate()} ${MONF[d.getUTCMonth()]}`, today: i === 0 };
+  });
+  const fmt = m => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
+  const slotsFor = d => {
+    const h = SITE.hours.find(x => x.d.includes(d.wd)); if (!h) return [];
+    const out = [], nowMin = nskNow().min;
+    for (let m = toMin(h.from); m <= toMin(h.to) - 60; m += 30) if (!d.today || m >= nowMin + 60) out.push(fmt(m));
+    return out;
+  };
   root.innerHTML = `
     <div class="field"><span class="flabel">Услуга <span class="req">*</span></span>
       <div class="svc-chips">${SERVICES.map(s => `<button type="button" data-v="${s.id}">${s.title}</button>`).join("")}<button type="button" data-v="other">Другое / не знаю</button></div></div>
@@ -87,11 +103,9 @@ function bookForm(root, pre = {}) {
     </div>
     <div class="field"><label>Врач</label><select name="doctor"><option value="">Любой свободный врач</option>
       ${DOCTORS.map(d => `<option value="${d.id}">${d.short} — ${d.role.toLowerCase()}</option>`).join("")}</select></div>
-    <div class="f-row">
-      <div class="field"><label>Желаемая дата</label><input name="date" type="date" min="${today.toISOString().slice(0, 10)}"></div>
-      <div class="field"><span class="flabel">Время</span><div class="time-chips">
-        <button type="button" data-v="утром">Утро<small>9–12</small></button><button type="button" data-v="днём">День<small>12–16</small></button><button type="button" data-v="вечером">Вечер<small>после 16</small></button></div></div>
-    </div>
+    <div class="field"><span class="flabel">День</span><div class="day-chips">${days.map((d, i) => `<button type="button" data-i="${i}"><small>${d.top}</small><b>${d.num}</b><small>${d.mon}</small></button>`).join("")}</div></div>
+    <div class="field"><span class="flabel">Время</span><div class="slots"><p class="slots-empty">Сначала выберите день</p></div>
+      <p class="slot-note">Администратор подтвердит, что выбранное время свободно.</p></div>
     <div class="field"><label>Комментарий</label><textarea name="comment" placeholder="Что беспокоит, есть ли боль, удобное время для звонка…"></textarea></div>
     <span class="flabel">Ваше сообщение</span>
     <div class="preview"></div>
@@ -103,8 +117,8 @@ function bookForm(root, pre = {}) {
   if (pre.doctor) f("doctor").value = pre.doctor;
 
   const text = () => {
-    const s = svcById(st.service), d = docById(f("doctor").value), date = f("date").value;
-    const when = [date && date.split("-").reverse().join("."), st.time].filter(Boolean).join(", ");
+    const s = svcById(st.service), d = docById(f("doctor").value), day = days[st.day];
+    const when = day ? day.full + (st.time && st.time !== "any" ? ", " + st.time : ", любое время") : "";
     return ["Здравствуйте! Хочу записаться на приём в стоматологию «Тагай».", "", ...[
       "Имя: " + (f("name").value.trim() || "—"),
       "Телефон: " + (f("phone").value.trim() || "—"),
@@ -116,11 +130,22 @@ function bookForm(root, pre = {}) {
   };
   const upd = () => {
     $$(".svc-chips button", root).forEach(b => b.classList.toggle("on", b.dataset.v === st.service));
-    $$(".time-chips button", root).forEach(b => b.classList.toggle("on", b.dataset.v === st.time));
+    $$(".day-chips button", root).forEach(b => b.classList.toggle("on", +b.dataset.i === st.day));
+    $$(".slots button", root).forEach(b => b.classList.toggle("on", b.dataset.v === st.time));
     $(".preview", root).textContent = text();
   };
   $$(".svc-chips button", root).forEach(b => b.onclick = () => { st.service = b.dataset.v; $(".svc-chips", root).classList.remove("invalid"); upd(); });
-  $$(".time-chips button", root).forEach(b => b.onclick = () => { st.time = st.time === b.dataset.v ? "" : b.dataset.v; upd(); });
+  const drawSlots = () => {
+    const box = $(".slots", root), d = days[st.day];
+    if (!d) { box.innerHTML = `<p class="slots-empty">Сначала выберите день</p>`; return; }
+    const list = slotsFor(d);
+    if (!list.includes(st.time) && st.time !== "any") st.time = "";
+    box.innerHTML = list.length
+      ? `<button type="button" data-v="any" class="any">Любое</button>` + list.map(t => `<button type="button" data-v="${t}">${t}</button>`).join("")
+      : `<p class="slots-empty">На сегодня запись уже закрыта — выберите другой день</p>`;
+    $$("button", box).forEach(b => b.onclick = () => { st.time = st.time === b.dataset.v ? "" : b.dataset.v; upd(); });
+  };
+  $$(".day-chips button", root).forEach(b => b.onclick = () => { st.day = +b.dataset.i; drawSlots(); upd(); });
   f("phone").addEventListener("input", e => {
     let v = e.target.value.replace(/\D/g, "");
     if (v[0] === "8") v = "7" + v.slice(1); if (v && v[0] !== "7") v = "7" + v; v = v.slice(0, 11);
@@ -129,16 +154,6 @@ function bookForm(root, pre = {}) {
   });
   root.addEventListener("input", e => { e.target.classList?.remove("invalid"); upd(); });
   root.addEventListener("change", upd);
-  // в среду приём с 12:00 — утро недоступно
-  f("date").addEventListener("change", () => {
-    const v = f("date").value, wd = v ? new Date(v + "T12:00").getDay() : -1;
-    const am = $('.time-chips [data-v="утром"]', root);
-    am.disabled = wd === 3; am.style.opacity = wd === 3 ? .35 : "";
-    am.title = wd === 3 ? "В среду приём с 12:00" : "";
-    if (wd === 3 && st.time === "утром") st.time = "";
-    upd();
-  });
-
   const valid = () => {
     const bad = [];
     if (!st.service) { $(".svc-chips", root).classList.add("invalid"); bad.push(1); }
@@ -326,7 +341,7 @@ const PAGES = {
     $(".doctor-main").onclick = () => openLb(d.imgs, d.imgs.indexOf($("#mainimg").getAttribute("src")));
     $("#others").innerHTML = TEAM.filter(x => x !== d && !x.admin).slice(0, 4).map(docCard).join("");
   },
-  about() { mosaic($("#mosaic"), GALLERY, ["w2 h2", "", "", "h2", "", "", "w2", "", "", "h2", "w2", ""]); },
+  about() { mosaic($("#mosaic"), GALLERY, ["w2 h2", "", "", "h2", "", "", "w2", "", "", "h2", "w2", "", "w2 h2", "h2", "", "w2", "w2", "w2"]); },
   contacts() { contactsBlock($("#contacts")); bookForm($("#form"), { service: new URLSearchParams(location.search).get("service") || "" }); },
 };
 

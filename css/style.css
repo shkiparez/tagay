@@ -252,12 +252,12 @@ section{padding:110px 0}
 @media(max-width:900px){.split{grid-template-columns:1fr;gap:36px}.split-img{aspect-ratio:4/3}}
 
 /* ---------- gallery */
-.mosaic{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:240px;gap:8px}
+.mosaic{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:240px;grid-auto-flow:dense;gap:8px}
 .mosaic figure{position:relative;overflow:hidden;border-radius:16px;cursor:zoom-in;background:#222}
-.mosaic img{width:100%;height:100%;object-fit:cover;transition:.7s var(--ease)}
+.mosaic img{width:100%;height:100%;object-fit:cover;object-position:center 30%;transition:.7s var(--ease)}
 .mosaic figure:hover img{transform:scale(1.05)}
 .mosaic .w2{grid-column:span 2}.mosaic .h2{grid-row:span 2}
-@media(max-width:760px){.mosaic{grid-template-columns:1fr 1fr;grid-auto-rows:170px;gap:6px}}
+@media(max-width:760px){.mosaic{grid-template-columns:1fr 1fr;grid-auto-rows:46vw;gap:6px}.mosaic figure{border-radius:12px;grid-column:auto!important;grid-row:auto!important}.mosaic figure:nth-child(3n+1){grid-column:span 2!important;}}
 
 /* ---------- rating */
 .rating{display:grid;grid-template-columns:auto 1fr auto;gap:44px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:30px;padding:44px 48px}
@@ -400,3 +400,23 @@ body.lock{overflow:hidden}
 .hero-team .stats-wrap{margin-top:-120px;padding-bottom:50px}
 .hero-team .stats{text-align:left}
 @media(max-width:720px){.hero-team{padding-top:104px}.hero-team h1{margin-bottom:14px}.hero-team p{margin-bottom:22px;font-size:16px}.hero-team .hero-actions{flex-wrap:nowrap;gap:8px}.hero-team .hero-actions .btn{flex:1;padding:14px 10px;font-size:14px}.hero-team .team{margin-top:-12vw}.hero-team .team:before{height:16%}.hero-team .team:after{height:14%}.hero-team .stats-wrap{margin-top:-24px}}
+
+/* ---------- запись: выбор дня и времени */
+.day-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;scroll-snap-type:x proximity}
+.day-chips::-webkit-scrollbar{display:none}
+.day-chips button{flex:0 0 66px;scroll-snap-align:start;cursor:pointer;background:var(--cream);border:1.5px solid transparent;border-radius:16px;padding:9px 4px;text-align:center;line-height:1.15;transition:.2s}
+.day-chips button small{display:block;font-size:11.5px;font-weight:600;color:var(--muted)}
+.day-chips button b{display:block;font-family:Unbounded;font-size:19px;font-weight:600;margin:3px 0 2px}
+.day-chips button:hover{border-color:var(--line)}
+.day-chips button.on{background:var(--ink);color:#fff}
+.day-chips button.on small{color:rgba(255,255,255,.7)}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px}
+.slots button{cursor:pointer;background:var(--cream);border:1.5px solid transparent;border-radius:12px;padding:11px 4px;font-weight:700;font-size:14.5px;transition:.2s}
+.slots button:hover{border-color:var(--line)}
+.slots button.on{background:var(--green);color:#fff}
+.slots button.any{background:#fff;border-color:var(--line)}
+.slots button.any.on{background:var(--ink);border-color:var(--ink)}
+.slots-empty{grid-column:1/-1;font-size:14px;color:var(--muted);background:var(--cream);border-radius:12px;padding:13px 16px}
+.slot-note{font-size:12.5px;color:var(--muted);margin-top:8px}
+@media(max-width:560px){.slots{grid-template-columns:repeat(4,1fr)}.day-chips button{flex-basis:60px}}
+.book-grid>*,.bform,.bform .field{min-width:0}
