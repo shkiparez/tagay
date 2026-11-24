@@ -212,7 +212,7 @@ function modal() {
 /* ---------- шапка, подвал, кнопки */
 function chrome() {
   const page = { service: "services", doctor: "doctors" }[document.body.dataset.page] || document.body.dataset.page;
-  const nav = [["index", "Главная"], ["services", "Услуги"], ["doctors", "Врачи"], ["about", "О клинике"], ["contacts", "Контакты"]];
+  const nav = [["index", "Главная"], ["services", "Услуги"], ["doctors", "Врачи"], ["about", "О клинике"], ["patients", "Пациентам"], ["contacts", "Контакты"]];
   const logo = `<a class="logo" href="index.html" aria-label="Тагай — на главную"><span class="logo-mark">${IC.logo}</span><span><b>ТАГАЙ</b><small>стоматология</small></span></a>`;
   const dd = `<div class="dd"><div class="dd-grid">${SERVICES.map(s => `<a href="service.html?id=${s.id}"><img src="${s.img}" alt="" loading="lazy"><span><b>${s.title}</b><small>${s.tag}</small></span></a>`).join("")}</div><a class="dd-all" href="services.html">Все услуги →</a></div>`;
   const hdr = $("#hdr");
@@ -383,6 +383,17 @@ const PAGES = {
       </div>`;
     $$("#lic figure").forEach(f => f.onclick = () => openLb(L.scans, +f.dataset.i));
     mosaic($("#mosaic"), GALLERY, ["w2 h2", "", "", "h2", "", "", "w2", "", "", "h2", "w2", "", "w2 h2", "h2", "", "w2", "w2", "w2"]); },
+  patients() {
+    const L = SITE.legal;
+    $("#ptDocs").innerHTML = `
+      <a href="${L.pdf}" target="_blank" rel="noopener"><i>PDF</i><span>Лицензия на медицинскую деятельность<small>№ ${L.license} от ${L.licenseDate}</small></span></a>
+      <a href="about.html#license"><i>ИНФО</i><span>Сведения об организации<small>${L.org}, ОГРН ${L.ogrn}, ИНН ${L.inn}</small></span></a>
+      <a href="doctors.html"><i>ВРАЧИ</i><span>Сведения о врачах<small>Образование, специальность, стаж</small></span></a>
+      <a href="contacts.html"><i>ЧАСЫ</i><span>Режим работы и контакты<small>${SITE.hours.map(h => h.days + " " + h.from + "–" + h.to).join(", ")}</small></span></a>`;
+    const links = $$(".pt-nav a"), arts = links.map(a => $(a.getAttribute("href")));
+    const spy = () => { let k = 0; arts.forEach((s, i) => { if (s.getBoundingClientRect().top < 160) k = i; }); links.forEach((a, i) => a.classList.toggle("on", i === k)); };
+    addEventListener("scroll", spy, { passive: true }); spy();
+  },
   contacts() { contactsBlock($("#contacts")); bookForm($("#form"), { service: new URLSearchParams(location.search).get("service") || "" }); },
 };
 

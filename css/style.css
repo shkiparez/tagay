@@ -436,3 +436,28 @@ body.lock{overflow:hidden}
 @media(max-width:900px){.lic{grid-template-columns:1fr;gap:20px}}
 @media(max-width:560px){.lic-info{padding:22px 18px}.lic-info dl div{grid-template-columns:1fr;gap:2px}.lic-info .btn{width:100%}}
 .copy a:hover{color:#fff}
+
+/* ---------- пациентам */
+.pt{display:grid;grid-template-columns:240px 1fr;gap:56px;align-items:start}
+.pt-nav{position:sticky;top:100px;display:grid;gap:4px}
+.pt-nav a{padding:11px 16px;border-radius:14px;font-weight:700;font-size:15px;color:var(--muted);transition:.2s}
+.pt-nav a:hover,.pt-nav a.on{background:var(--paper);color:var(--ink)}
+.pt-body article{background:var(--paper);border:1px solid var(--line);border-radius:28px;padding:40px;margin-bottom:20px;scroll-margin-top:100px}
+.pt-body h2{font-size:clamp(24px,3vw,36px);margin-bottom:14px}
+.pt-body p{color:#3a332c;margin-bottom:12px}
+.pt-body .ticks{margin:18px 0 0}
+.pt-docs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.pt-docs a{display:flex;gap:14px;align-items:center;background:var(--cream);border-radius:18px;padding:16px 18px;font-weight:700;transition:.2s}
+.pt-docs a:hover{background:#ebe2d4}
+.pt-docs a small{display:block;font-weight:500;font-size:13px;color:var(--muted)}
+.pt-docs i{flex:none;width:44px;height:44px;border-radius:12px;background:var(--ink);color:#fff;display:grid;place-items:center;font-style:normal;font:700 12px Manrope}
+.orgs{display:grid;gap:14px;margin-top:22px}
+.org{background:var(--cream);border-radius:20px;padding:24px 26px}
+.org h3{font-size:17px;margin-bottom:6px;line-height:1.3}
+.org p{font-size:14.5px;color:var(--muted)}
+.org dl div{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:15px}
+.org dt{color:var(--muted)}
+.org dd{font-weight:600}
+.org a{color:var(--green-d);font-weight:700}
+@media(max-width:960px){.pt{grid-template-columns:1fr;gap:20px}.pt-nav{position:static;display:flex;overflow-x:auto;scrollbar-width:none;gap:6px}.pt-nav a{flex:none;background:var(--paper);border:1px solid var(--line)}}
+@media(max-width:600px){.pt-body article{padding:24px 18px;border-radius:22px}.pt-docs{grid-template-columns:1fr}.org{padding:18px}.org dl div{grid-template-columns:1fr;gap:0}}
