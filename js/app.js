@@ -231,7 +231,8 @@ function chrome() {
     <div><h4>Контакты</h4><a href="tel:${SITE.phone}">${SITE.phoneText}</a>${SITE.phones.map(([p, t]) => `<a href="tel:${p}">${t}</a>`).join("")}
       <a href="mailto:${SITE.email}">${SITE.email}</a><a href="${SITE.maps}" target="_blank" rel="noopener">${SITE.address}</a>
       ${SITE.hours.map(h => `<span style="display:block;padding:4px 0">${h.days}: ${h.from}–${h.to}</span>`).join("")}</div>
-    </div><div class="copy"><span>© ${new Date().getFullYear()} Стоматология «Тагай», Новосибирск</span><span>Имеются противопоказания. Необходима консультация специалиста.</span></div></div>`;
+    </div><div class="copy"><span>© ${new Date().getFullYear()} Стоматология «Тагай» · ${SITE.legal.org} · ОГРН ${SITE.legal.ogrn} · ИНН ${SITE.legal.inn}<br>
+      <a href="about.html#license" style="text-decoration:underline">Лицензия № ${SITE.legal.license} от ${SITE.legal.licenseDate}</a></span><span>Имеются противопоказания. Необходима консультация специалиста.</span></div></div>`;
 
   document.body.insertAdjacentHTML("beforeend", `<div class="fab"><a class="t" href="tel:${SITE.phone}" aria-label="Позвонить">${IC.tel}</a>
     <a class="w" href="${waLink()}" target="_blank" rel="noopener" aria-label="Написать в WhatsApp">${IC.wa}</a></div>
@@ -364,7 +365,24 @@ const PAGES = {
     $(".doctor-main").onclick = () => openLb(d.imgs, d.imgs.indexOf($("#mainimg").getAttribute("src")));
     $("#others").innerHTML = TEAM.filter(x => x !== d && !x.admin).slice(0, 4).map(docCard).join("");
   },
-  about() { mosaic($("#mosaic"), GALLERY, ["w2 h2", "", "", "h2", "", "", "w2", "", "", "h2", "w2", "", "w2 h2", "h2", "", "w2", "w2", "w2"]); },
+  about() {
+    const L = SITE.legal;
+    $("#lic").innerHTML = `<div class="lic-scans">${L.scans.map((s, i) => `<figure data-i="${i}"><img src="${s}" alt="Лицензия, страница ${i + 1}" loading="lazy"><figcaption>Страница ${i + 1}</figcaption></figure>`).join("")}</div>
+      <div class="lic-info">
+        <dl>
+          <div><dt>Организация</dt><dd>${L.orgFull}</dd></div>
+          <div><dt>Лицензия</dt><dd>№ ${L.license} от ${L.licenseDate}</dd></div>
+          <div><dt>Вид деятельности</dt><dd>Медицинская деятельность</dd></div>
+          <div><dt>Срок действия</dt><dd>${L.licenseTerm[0].toUpperCase() + L.licenseTerm.slice(1)}</dd></div>
+          <div><dt>Кем выдана</dt><dd>${L.issuer}</dd></div>
+          <div><dt>Адрес</dt><dd>${L.licenseAddress}</dd></div>
+          <div><dt>ОГРН</dt><dd>${L.ogrn}</dd></div>
+          <div><dt>ИНН</dt><dd>${L.inn}</dd></div>
+        </dl>
+        <a class="btn btn-dark" href="${L.pdf}" target="_blank" rel="noopener" download>Скачать лицензию (PDF)</a>
+      </div>`;
+    $$("#lic figure").forEach(f => f.onclick = () => openLb(L.scans, +f.dataset.i));
+    mosaic($("#mosaic"), GALLERY, ["w2 h2", "", "", "h2", "", "", "w2", "", "", "h2", "w2", "", "w2 h2", "h2", "", "w2", "w2", "w2"]); },
   contacts() { contactsBlock($("#contacts")); bookForm($("#form"), { service: new URLSearchParams(location.search).get("service") || "" }); },
 };
 
