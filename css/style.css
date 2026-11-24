@@ -461,3 +461,9 @@ body.lock{overflow:hidden}
 .org a{color:var(--green-d);font-weight:700}
 @media(max-width:960px){.pt{grid-template-columns:1fr;gap:20px}.pt-nav{position:static;display:flex;overflow-x:auto;scrollbar-width:none;gap:6px}.pt-nav a{flex:none;background:var(--paper);border:1px solid var(--line)}}
 @media(max-width:600px){.pt-body article{padding:24px 18px;border-radius:22px}.pt-docs{grid-template-columns:1fr}.org{padding:18px}.org dl div{grid-template-columns:1fr;gap:0}}
+.oms{margin-top:26px;background:#eef6ee;border:1px solid #cfe6d1;border-radius:20px;padding:22px 24px}
+.oms h3{font-size:17px;margin-bottom:8px}
+.oms p{font-size:15px;margin-bottom:8px}
+.oms a{color:var(--green-d);font-weight:700;text-decoration:underline}
+.svc-note{font-size:14px;color:var(--muted);margin-top:26px}
+.svc-note a{text-decoration:underline;font-weight:700;color:var(--ink)}
