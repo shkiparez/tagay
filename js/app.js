@@ -204,7 +204,7 @@ function bookForm(root, pre = {}) {
 function modal() {
   document.body.insertAdjacentHTML("beforeend", `<div class="modal" id="bookModal" role="dialog" aria-modal="true" aria-label="Запись на приём">
     <div class="bform"><button class="m-close" aria-label="Закрыть">✕</button><h3>Запись на приём</h3>
-    <p class="sub">Новым пациентам — скидка 5%. Ответим и подтвердим время.</p><div class="m-body"></div></div></div>`);
+    <p class="sub">Скидка 5% по кодовому слову «ТАГАЙ». Ответим и подтвердим время.</p><div class="m-body"></div></div></div>`);
   const m = $("#bookModal");
   const close = () => { m.classList.remove("show"); document.body.classList.remove("lock"); };
   window.openBook = (pre = {}) => { bookForm($(".m-body", m), pre); m.classList.add("show"); document.body.classList.add("lock"); };
@@ -370,8 +370,9 @@ const PAGES = {
         ${d.alt ? `<p class="lead" style="margin-top:12px">${d.alt}</p>` : ""}
         ${d.about ? `<p class="lead" style="margin-top:14px">${d.about}</p>` : ""}
         <div class="specs">${d.exp ? `<div><span>${d.expLabel || "Стаж"}</span><b>${d.exp}</b></div>` : ""}<div${d.exp ? "" : ' style="grid-column:1/-1"'}><span>Специализация</span><b>${d.role}</b></div></div>
-        ${d.edu.length ? `<h3>Образование</h3><ul class="ticks doc-list">${d.edu.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}
-        ${d.certs ? `<h3>Аккредитация и сертификаты</h3><ul class="ticks doc-list">${d.certs.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}
+        ${d.edu && d.edu.length ? `<h3>Образование</h3><ul class="ticks doc-list">${d.edu.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}
+        ${d.certs && d.certs.length ? `<h3>Аккредитация и сертификаты</h3><ul class="ticks doc-list">${d.certs.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}
+        ${d.courses && d.courses.length ? `<h3>Курсы и достижения</h3><ul class="ticks doc-list">${d.courses.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}
         ${d.admin ? `<p class="prose" style="font-size:18px;color:#3a332c;margin-bottom:30px">Дарья встретит вас в клинике, ответит на вопросы, подберёт удобное время и врача.</p>`
           : d.staff ? `<p class="prose" style="font-size:18px;color:#3a332c;margin-bottom:30px">Ассистент помогает врачу на приёме и следит за стерильностью инструментов.</p>`
           : `<h3>Услуги врача</h3><div class="mini-svcs">${svcs.map(s => `<a href="service.html?id=${s.id}"><img src="${s.img}" alt=""><span>${s.title}</span><span>→</span></a>`).join("")}</div>`}

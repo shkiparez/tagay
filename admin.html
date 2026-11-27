@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Админка — стоматология «Тагай»</title>
+<link rel="stylesheet" href="css/fonts.css?v=24">
+<style>
+:root{--ink:#14110e;--cream:#f4efe7;--paper:#fffdf9;--line:#e3dacb;--muted:#6f665b;--green:#3faa4a;--green-d:#2e8a38;--red:#c2402f;--r:16px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,system-ui,sans-serif;background:var(--cream);color:var(--ink);font-size:15px;line-height:1.5}
+h1,h2,h3{font-family:Unbounded,sans-serif;font-weight:600;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer}
+input,textarea,select{font:inherit;color:inherit;width:100%;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;outline:none}
+input:focus,textarea:focus{border-color:var(--green)}
+textarea{resize:vertical;min-height:70px}
+label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;padding:11px 20px;font-weight:700;background:var(--ink);color:#fff}
+.btn.green{background:var(--green)}.btn.green:hover{background:var(--green-d)}
+.btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.btn.small{padding:7px 13px;font-size:13px}
+.btn.danger{background:transparent;color:var(--red);border:1.5px solid #f0c3bb}
+.btn:disabled{opacity:.5;cursor:wait}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login-card{background:var(--paper);border-radius:26px;padding:36px;max-width:520px;width:100%;box-shadow:0 30px 60px -30px rgba(0,0,0,.35)}
+.login-card h1{font-size:24px;margin-bottom:8px}
+.login-card p{color:var(--muted);margin-bottom:18px}
+.login-card ol{margin:0 0 20px 18px;color:var(--muted);font-size:14px}
+.login-card ol li{margin-bottom:4px}
+.err{color:var(--red);font-weight:700;font-size:14px;margin-top:10px;min-height:20px}
+.row-check{display:flex;gap:8px;align-items:center;margin:12px 0 18px;font-size:14px}
+.row-check input{width:auto}
+/* app */
+#app{display:none}
+header.top{position:sticky;top:0;z-index:10;background:var(--ink);color:#fff}
+header.top .wrap{display:flex;align-items:center;gap:16px;height:64px}
+header.top b{font-family:Unbounded;font-size:16px}
+header.top .sp{flex:1}
+header.top a{color:#fff;opacity:.7;font-size:14px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:24px 0}
+.tabs button{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700}
+.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:24px;margin-bottom:16px}
+.card h2{font-size:18px;margin-bottom:16px}
+.card h3{font-size:15px;margin:6px 0 12px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}.g4{grid-template-columns:2fr 1fr 1fr 1fr}
+.line{display:grid;grid-template-columns:1fr 180px auto;gap:8px;margin-bottom:8px;align-items:center}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+.days{display:flex;gap:4px;flex-wrap:wrap}
+.days label{display:flex;gap:4px;align-items:center;font-size:13px;background:var(--cream);padding:6px 9px;border-radius:9px;margin:0;color:var(--ink)}
+.days input{width:auto}
+.member{display:grid;grid-template-columns:150px 1fr;gap:20px}
+.photos{display:flex;flex-direction:column;gap:8px}
+.photos .ph{position:relative}
+.photos img{width:150px;height:190px;object-fit:cover;object-position:center 18%;border-radius:14px;background:#ddd;display:block}
+.photos .ph button{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff}
+.photos .ph.main:after{content:"главное";position:absolute;left:6px;bottom:6px;background:var(--green);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+.head-row{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.head-row h2{margin:0}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.savebar{position:sticky;bottom:0;background:rgba(244,239,231,.95);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:14px 0;margin-top:30px}
+.savebar .wrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+#status{font-size:14px;font-weight:700}
+#status.ok{color:var(--green-d)}#status.bad{color:var(--red)}
+.dirty{display:inline-block;width:9px;height:9px;border-radius:50%;background:#e2683c;margin-right:6px}
+.checks{display:flex;gap:6px;flex-wrap:wrap}
+.checks label{display:flex;gap:5px;align-items:center;margin:0;font-size:13px;background:var(--cream);color:var(--ink);padding:6px 10px;border-radius:9px;font-weight:600}
+.checks input{width:auto}
+@media(max-width:760px){.g2,.g3,.g4,.member{grid-template-columns:1fr}.line{grid-template-columns:1fr 120px auto}.photos{flex-direction:row;flex-wrap:wrap}.photos img{width:110px;height:140px}}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="login-card">
+    <h1>Админка сайта «Тагай»</h1>
+    <p>Для входа нужен ключ доступа GitHub к репозиторию сайта. Пароль на сайте не хранится — без ключа изменить сайт невозможно.</p>
+    <ol>
+      <li>Откройте <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com → Fine-grained token</a></li>
+      <li>Repository access → <b>Only select repositories</b> → <b>tagay</b></li>
+      <li>Permissions → Repository → <b>Contents: Read and write</b></li>
+      <li>Нажмите «Generate token» и вставьте ключ сюда</li>
+    </ol>
+    <label for="tok">Ключ доступа</label>
+    <input id="tok" type="password" autocomplete="off" placeholder="github_pat_…">
+    <div class="row-check"><input type="checkbox" id="remember"><label for="remember" style="margin:0;color:var(--ink);font-weight:600">Запомнить на этом устройстве</label></div>
+    <button class="btn green" id="loginBtn">Войти</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<div id="app">
+  <header class="top"><div class="wrap"><b>ТАГАЙ · админка</b><span class="sp"></span><a href="index.html" target="_blank">Открыть сайт ↗</a><button class="btn ghost small" id="logout" style="color:#fff;border-color:#555">Выйти</button></div></header>
+  <div class="wrap">
+    <div class="tabs" id="tabs"></div>
+    <div id="panel"></div>
+  </div>
+  <div class="savebar"><div class="wrap">
+    <button class="btn green" id="saveBtn">Опубликовать изменения</button>
+    <span id="status"></span>
+  </div></div>
+</div>
+
+<script>
+/* ===== настройки репозитория ===== */
+const REPO = { owner: "shkiparez", name: "tagay", branch: "main", dataPath: "js/data.js" };
+const API = `https://api.github.com/repos/${REPO.owner}/${REPO.name}`;
+const SPEC_NAMES = { surg: "Хирург", ortho: "Ортопед", thera: "Терапевт", hyg: "Гигиенист", staff: "Ассистент / администратор" };
+const DAY_NAMES = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+
+let TOKEN = "", D = null, SHA = "", dirty = false, uploads = {}, tab = "contacts";
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const store = { get(k) { try { return localStorage.getItem(k) || sessionStorage.getItem(k) || ""; } catch (e) { return ""; } },
+  set(k, v, keep) { try { (keep ? localStorage : sessionStorage).setItem(k, v); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch (e) {} } };
+
+/* ===== GitHub API ===== */
+async function gh(path, opts = {}) {
+  const r = await fetch(API + path, { ...opts, headers: { Authorization: "Bearer " + TOKEN, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", ...(opts.headers || {}) } });
+  if (!r.ok) { const t = await r.text(); throw new Error(r.status + " " + (JSON.parse(t || "{}").message || t)); }
+  return r.status === 204 ? null : r.json();
+}
+const b64ToText = b => new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\n/g, "")), c => c.charCodeAt(0)));
+function bytesToB64(bytes) { let s = ""; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000)); return btoa(s); }
+const textToB64 = t => bytesToB64(new TextEncoder().encode(t));
+async function getFile(path) { return gh(`/contents/${path}?ref=${REPO.branch}&t=${Date.now()}`); }
+async function putFile(path, b64, message, sha) {
+  return gh(`/contents/${path}`, { method: "PUT", body: JSON.stringify({ message, content: b64, branch: REPO.branch, ...(sha ? { sha } : {}) }) });
+}
+
+/* ===== вход ===== */
+async function login(tok, keep) {
+  TOKEN = tok.trim();
+  const repo = await gh("");
+  if (!repo.permissions || !repo.permissions.push) throw new Error("У ключа нет права записи (Contents: Read and write).");
+  await loadData();
+  store.set("tagay_tok", TOKEN, keep);
+  $("#login").style.display = "none"; $("#app").style.display = "block";
+  render();
+}
+$("#loginBtn").onclick = async () => {
+  const b = $("#loginBtn"); b.disabled = true; $("#loginErr").textContent = "";
+  try { await login($("#tok").value, $("#remember").checked); }
+  catch (e) { $("#loginErr").textContent = e.message.startsWith("401") ? "Ключ не подходит или истёк." : "Ошибка: " + e.message; }
+  b.disabled = false;
+};
+$("#tok").addEventListener("keydown", e => { if (e.key === "Enter") $("#loginBtn").click(); });
+$("#logout").onclick = () => { if (dirty && !confirm("Есть неопубликованные изменения. Выйти?")) return; store.del("tagay_tok"); location.reload(); };
+(async () => { const t = store.get("tagay_tok"); if (t) { try { await login(t, !!localStorage.getItem("tagay_tok")); } catch (e) { store.del("tagay_tok"); } } })();
+
+/* ===== данные ===== */
+async function loadData() {
+  const f = await getFile(REPO.dataPath); SHA = f.sha;
+  const src = b64ToText(f.content);
+  D = new Function(src + "\n;return {SITE, SERVICES, PRICES: typeof PRICES!=='undefined'?PRICES:[], PROMO: typeof PROMO!=='undefined'?PROMO:null, TEAM, SOON, SPECS, GALLERY};")();
+  dirty = false; uploads = {};
+}
+function buildDataJs() {
+  const J = v => JSON.stringify(v, null, 2);
+  return `/* ====== ДАННЫЕ САЙТА ======
+   Файл генерируется админкой (admin.html). Можно править и вручную — структура та же.
+   Обновлено: ${new Date().toLocaleString("ru-RU", { timeZone: "Asia/Novosibirsk" })} (Новосибирск) */
+
+const SITE = ${J(D.SITE)};
+
+/* Услуги. price: null → «После осмотра» */
+const SERVICES = ${J(D.SERVICES)};
+
+/* Прейскурант */
+const PRICES = ${J(D.PRICES)};
+
+/* Акция. until — последний день показа (после него блок сам скроется) */
+const PROMO = ${J(D.PROMO)};
+
+/* Команда */
+const TEAM = ${J(D.TEAM)};
+const SOON = ${J(D.SOON)};
+
+const SPECS = ${J(D.SPECS)};
+
+const GALLERY = ${J(D.GALLERY)};
+`;
+}
+function markDirty() { dirty = true; status('<span class="dirty"></span>Есть неопубликованные изменения', ""); }
+function status(html, cls) { const s = $("#status"); s.innerHTML = html; s.className = cls || ""; }
+addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+/* привязка полей: data-k="SITE.phoneText" / список строк: data-lines */
+function getPath(path) { return path.split(".").reduce((o, k) => o?.[k], D); }
+function setPath(path, val) { const ks = path.split("."); const last = ks.pop(); const o = ks.reduce((o, k) => o[k], D); o[last] = val; }
+function bind(root) {
+  root.querySelectorAll("[data-k]").forEach(el => {
+    const p = el.dataset.k, v = getPath(p);
+    if (el.type === "checkbox") el.checked = !!v;
+    else if ("lines" in el.dataset) el.value = (v || []).join("\n");
+    else el.value = v ?? "";
+    el.addEventListener("input", () => {
+      let val = el.type === "checkbox" ? el.checked : el.value;
+      if ("lines" in el.dataset) val = el.value.split("\n").map(s => s.trim()).filter(Boolean);
+      if ("nullable" in el.dataset && val === "") val = null;
+      setPath(p, val); markDirty();
+    });
+  });
+}
+
+/* ===== вкладки ===== */
+const TABS = { contacts: "Контакты и график", promo: "Акция", prices: "Цены", services: "Услуги", team: "Команда" };
+function render() {
+  $("#tabs").innerHTML = Object.entries(TABS).map(([k, t]) => `<button data-t="${k}" class="${k === tab ? "on" : ""}">${t}</button>`).join("");
+  $("#tabs").querySelectorAll("button").forEach(b => b.onclick = () => { tab = b.dataset.t; render(); });
+  const p = $("#panel"); p.innerHTML = VIEWS[tab](); bind(p); (AFTER[tab] || (() => {}))(p);
+}
+const field = (label, k, attrs = "", hint = "") => `<div><label>${label}</label><input data-k="${k}" ${attrs}>${hint ? `<div class="hint">${hint}</div>` : ""}</div>`;
+const area = (label, k, attrs = "", hint = "") => `<div><label>${label}</label><textarea data-k="${k}" ${attrs}></textarea>${hint ? `<div class="hint">${hint}</div>` : ""}</div>`;
+
+const VIEWS = {
+  contacts: () => `
+    <div class="card"><h2>Контакты</h2><div class="grid g2">
+      ${field("Телефон (как показывать)", "SITE.phoneText")}${field("Телефон для звонка", "SITE.phone", "", "Формат: +79628355504")}
+      ${field("Номер WhatsApp", "SITE.wa", "", "Только цифры: 79628355504")}${field("Ссылка на чат в Max", "SITE.max", "", "Например https://max.ru/u/… Если пусто — сайт покажет подсказку с номером")}
+      ${field("Telegram", "SITE.tg")}${field("Эл. почта", "SITE.email")}
+      ${field("Адрес", "SITE.address")}${field("Район, город, индекс", "SITE.district")}
+    </div></div>
+    <div class="card"><div class="head-row"><h2>Дополнительные телефоны</h2><button class="btn small ghost" id="addPhone">+ Телефон</button></div><div id="phones"></div></div>
+    <div class="card"><div class="head-row"><h2>График работы</h2><button class="btn small ghost" id="addHour">+ Строка</button></div><div id="hours"></div>
+      <div class="hint">Отметьте дни недели для каждой строки — по ним сайт показывает «Открыто / Закрыто» и время записи.</div></div>`,
+  promo: () => D.PROMO ? `
+    <div class="card"><h2>Акция</h2><div class="grid g3">
+      ${field("Заголовок", "PROMO.title")}${field("Подпись", "PROMO.note")}${field("Показывать до (включительно)", "PROMO.until", 'type="date"')}</div></div>
+    <div class="card"><div class="head-row"><h2>Позиции акции</h2><button class="btn small ghost" id="addPromo">+ Позиция</button></div><div id="promoItems"></div></div>
+    <button class="btn danger" id="delPromo">Удалить акцию</button>`
+    : `<div class="card"><h2>Акции нет</h2><button class="btn green" id="newPromo">Создать акцию</button></div>`,
+  prices: () => `<div id="cats"></div><button class="btn ghost" id="addCat">+ Раздел прайса</button>`,
+  services: () => D.SERVICES.map((s, i) => `
+    <div class="card"><div class="head-row"><h2>${esc(s.n)} · ${esc(s.title)}</h2></div><div class="grid g4">
+      ${field("Название", `SERVICES.${i}.title`)}${field("Цена", `SERVICES.${i}.price`, "data-nullable", "пусто = «После осмотра»")}${field("Длительность", `SERVICES.${i}.time`)}${field("Метка", `SERVICES.${i}.tag`)}</div>
+      <div class="grid g2" style="margin-top:12px">${area("Кратко", `SERVICES.${i}.short`)}${area("Подробно", `SERVICES.${i}.text`)}</div>
+      <div class="grid" style="margin-top:12px">${area("Что входит (каждый пункт с новой строки)", `SERVICES.${i}.includes`, "data-lines")}
+      <div><label>Кто принимает</label><div class="checks" data-svc="${i}">${D.TEAM.filter(d => !d.staff).map(d => `<label><input type="checkbox" value="${d.id}" ${s.docs.includes(d.id) ? "checked" : ""}>${esc(d.short)}</label>`).join("")}</div></div></div>
+    </div>`).join(""),
+  team: () => `<div class="head-row" style="margin-bottom:16px"><h2 style="font-size:18px">Команда</h2><button class="btn green small" id="addMember">+ Добавить сотрудника</button></div>` +
+    D.TEAM.map((d, i) => `
+    <div class="card"><div class="head-row"><h2>${esc(d.name)}</h2><div class="tools">
+      <button class="btn small ghost" data-up="${i}">↑</button><button class="btn small ghost" data-down="${i}">↓</button><button class="btn small danger" data-del="${i}">Удалить</button></div></div>
+      <div class="member"><div class="photos" data-ph="${i}">${d.imgs.map((src, j) => `<div class="ph ${j ? "" : "main"}"><img src="${uploads[src] ? uploads[src].preview : src + "?t=" + Date.now()}" data-make="${i}:${j}" title="Сделать главным" style="cursor:pointer">${d.imgs.length > 1 ? `<button data-rm="${i}:${j}" title="Убрать фото">✕</button>` : ""}</div>`).join("")}
+          <label class="btn small ghost" style="justify-content:center;margin:0;color:var(--ink)">+ Фото<input type="file" accept="image/*" data-up-photo="${i}" hidden></label></div>
+        <div><div class="grid g2">
+          ${field("ФИО полностью", `TEAM.${i}.name`)}${field("Коротко (имя фамилия)", `TEAM.${i}.short`)}
+          ${field("Должность / специализация", `TEAM.${i}.role`)}${field("Стаж", `TEAM.${i}.exp`, "data-nullable", "например «6 лет»; пусто — не показывать")}
+          ${field("Подпись к стажу", `TEAM.${i}.expLabel`, "data-nullable", "пусто = «Стаж»")}${field("Коротко о враче", `TEAM.${i}.about`, "data-nullable")}</div>
+          <div class="grid" style="margin-top:12px">
+          ${area("Образование (каждая запись с новой строки)", `TEAM.${i}.edu`, "data-lines")}
+          ${area("Аккредитация и сертификаты", `TEAM.${i}.certs`, "data-lines")}
+          ${area("Курсы и достижения", `TEAM.${i}.courses`, "data-lines")}
+          <div><label>Направление</label><div class="checks" data-spec="${i}">${Object.entries(SPEC_NAMES).map(([k, t]) => `<label><input type="checkbox" value="${k}" ${d.spec.includes(k) ? "checked" : ""}>${t}</label>`).join("")}</div>
+          <div class="hint">«Ассистент / администратор» — не показывается в выборе врача при записи.</div></div></div>
+        </div></div>
+    </div>`).join(""),
+};
+
+const AFTER = {
+  contacts(p) {
+    const drawPhones = () => {
+      $("#phones").innerHTML = D.SITE.phones.map((ph, i) => `<div class="line" style="grid-template-columns:1fr 1fr auto"><input data-k="SITE.phones.${i}.1" placeholder="+7 (383) 255-55-04"><input data-k="SITE.phones.${i}.0" placeholder="+73832555504"><button class="btn small danger" data-i="${i}">✕</button></div>`).join("") || '<div class="hint">Нет</div>';
+      bind($("#phones")); $("#phones").querySelectorAll("button").forEach(b => b.onclick = () => { D.SITE.phones.splice(+b.dataset.i, 1); markDirty(); drawPhones(); });
+    };
+    const drawHours = () => {
+      $("#hours").innerHTML = D.SITE.hours.map((h, i) => `<div class="card" style="padding:14px;margin-bottom:10px;background:var(--cream)"><div class="grid g4">
+        ${field("Дни (как показывать)", `SITE.hours.${i}.days`)}${field("С", `SITE.hours.${i}.from`, 'type="time"')}${field("До", `SITE.hours.${i}.to`, 'type="time"')}
+        <div style="display:flex;align-items:end"><button class="btn small danger" data-del-h="${i}">Удалить</button></div></div>
+        <div class="days" style="margin-top:10px">${DAY_NAMES.map((n, k) => `<label><input type="checkbox" data-h="${i}" value="${k + 1}" ${h.d.includes(k + 1) ? "checked" : ""}>${n}</label>`).join("")}</div></div>`).join("");
+      bind($("#hours"));
+      $("#hours").querySelectorAll("[data-h]").forEach(c => c.onchange = () => { const h = D.SITE.hours[+c.dataset.h]; const v = +c.value; h.d = c.checked ? [...new Set([...h.d, v])].sort() : h.d.filter(x => x !== v); markDirty(); });
+      $("#hours").querySelectorAll("[data-del-h]").forEach(b => b.onclick = () => { D.SITE.hours.splice(+b.dataset.delH, 1); markDirty(); drawHours(); });
+    };
+    drawPhones(); drawHours();
+    $("#addPhone").onclick = () => { D.SITE.phones.push(["", ""]); markDirty(); drawPhones(); };
+    $("#addHour").onclick = () => { D.SITE.hours.push({ days: "", from: "09:00", to: "20:00", d: [] }); markDirty(); drawHours(); };
+  },
+  promo(p) {
+    if (!D.PROMO) { $("#newPromo").onclick = () => { D.PROMO = { until: new Date().toISOString().slice(0, 10), title: "Акция", note: "", items: [["", ""]] }; markDirty(); render(); }; return; }
+    const draw = () => {
+      $("#promoItems").innerHTML = D.PROMO.items.map((it, i) => `<div class="line"><input data-k="PROMO.items.${i}.0" placeholder="Название"><input data-k="PROMO.items.${i}.1" placeholder="Цена"><button class="btn small danger" data-i="${i}">✕</button></div>`).join("");
+      bind($("#promoItems")); $("#promoItems").querySelectorAll("button").forEach(b => b.onclick = () => { D.PROMO.items.splice(+b.dataset.i, 1); markDirty(); draw(); });
+    };
+    draw();
+    $("#addPromo").onclick = () => { D.PROMO.items.push(["", ""]); markDirty(); draw(); };
+    $("#delPromo").onclick = () => { if (confirm("Удалить акцию с сайта?")) { D.PROMO = null; markDirty(); render(); } };
+  },
+  prices(p) {
+    const draw = () => {
+      $("#cats").innerHTML = D.PRICES.map((c, ci) => `<div class="card"><div class="head-row"><input data-k="PRICES.${ci}.cat" style="max-width:360px;font-weight:700">
+        <div class="tools"><button class="btn small ghost" data-cu="${ci}">↑</button><button class="btn small ghost" data-cd="${ci}">↓</button><button class="btn small danger" data-cx="${ci}">Удалить раздел</button></div></div>
+        ${c.items.map((it, ii) => `<div class="line"><input data-k="PRICES.${ci}.items.${ii}.0" placeholder="Услуга"><input data-k="PRICES.${ci}.items.${ii}.1" placeholder="от 1 000 ₽"><button class="btn small danger" data-ix="${ci}:${ii}">✕</button></div>`).join("")}
+        <button class="btn small ghost" data-ia="${ci}">+ Строка</button></div>`).join("");
+      bind($("#cats"));
+      const q = (a, f) => $("#cats").querySelectorAll(`[${a}]`).forEach(b => b.onclick = () => { f(b.getAttribute(a)); markDirty(); draw(); });
+      q("data-ia", ci => D.PRICES[ci].items.push(["", ""]));
+      q("data-ix", v => { const [ci, ii] = v.split(":").map(Number); D.PRICES[ci].items.splice(ii, 1); });
+      q("data-cx", ci => { if (confirm("Удалить раздел целиком?")) D.PRICES.splice(+ci, 1); });
+      q("data-cu", ci => { ci = +ci; if (ci > 0) [D.PRICES[ci - 1], D.PRICES[ci]] = [D.PRICES[ci], D.PRICES[ci - 1]]; });
+      q("data-cd", ci => { ci = +ci; if (ci < D.PRICES.length - 1) [D.PRICES[ci + 1], D.PRICES[ci]] = [D.PRICES[ci], D.PRICES[ci + 1]]; });
+    };
+    draw();
+    $("#addCat").onclick = () => { D.PRICES.push({ cat: "Новый раздел", items: [["", ""]] }); markDirty(); draw(); };
+  },
+  services(p) {
+    p.querySelectorAll("[data-svc]").forEach(box => box.querySelectorAll("input").forEach(c => c.onchange = () => {
+      const s = D.SERVICES[+box.dataset.svc]; s.docs = c.checked ? [...s.docs, c.value] : s.docs.filter(x => x !== c.value); markDirty();
+    }));
+  },
+  team(p) {
+    const T = D.TEAM;
+    p.querySelectorAll("[data-spec]").forEach(box => box.querySelectorAll("input").forEach(c => c.onchange = () => {
+      const d = T[+box.dataset.spec]; d.spec = c.checked ? [...d.spec, c.value] : d.spec.filter(x => x !== c.value);
+      d.staff = d.spec.includes("staff") || undefined; if (!d.staff) delete d.admin; markDirty();
+    }));
+    p.querySelectorAll("[data-up]").forEach(b => b.onclick = () => { const i = +b.dataset.up; if (i > 0) { [T[i - 1], T[i]] = [T[i], T[i - 1]]; markDirty(); render(); } });
+    p.querySelectorAll("[data-down]").forEach(b => b.onclick = () => { const i = +b.dataset.down; if (i < T.length - 1) { [T[i + 1], T[i]] = [T[i], T[i + 1]]; markDirty(); render(); } });
+    p.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+      const d = T[+b.dataset.del]; if (!confirm(`Удалить «${d.name}» с сайта?`)) return;
+      T.splice(+b.dataset.del, 1); D.SERVICES.forEach(s => s.docs = s.docs.filter(x => x !== d.id)); markDirty(); render();
+    });
+    p.querySelectorAll("[data-make]").forEach(im => im.onclick = () => { const [i, j] = im.dataset.make.split(":").map(Number); if (!j) return; const a = T[i].imgs; a.unshift(a.splice(j, 1)[0]); markDirty(); render(); });
+    p.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const [i, j] = b.dataset.rm.split(":").map(Number); T[i].imgs.splice(j, 1); markDirty(); render(); });
+    p.querySelectorAll("[data-up-photo]").forEach(inp => inp.onchange = async () => {
+      const f = inp.files[0]; if (!f) return; const d = T[+inp.dataset.upPhoto];
+      const blob = await resize(f, 900); const path = `img/staff-${d.id}-${Date.now().toString(36)}.jpg`;
+      uploads[path] = { blob, preview: URL.createObjectURL(blob) }; d.imgs.unshift(path); markDirty(); render();
+    });
+    $("#addMember").onclick = () => {
+      const id = "m" + Date.now().toString(36);
+      T.push({ id, name: "Новый сотрудник", short: "Новый сотрудник", role: "Врач-стоматолог", spec: ["thera"], exp: null, edu: [], imgs: ["img/team-hero.jpg"] });
+      markDirty(); render(); scrollTo(0, document.body.scrollHeight);
+    };
+  },
+};
+
+function resize(file, max) {
+  return new Promise((res, rej) => {
+    const img = new Image(); img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob(b => b ? res(b) : rej(new Error("Не удалось обработать фото")), "image/jpeg", .85);
+    }; img.onerror = () => rej(new Error("Не удалось открыть фото")); img.src = URL.createObjectURL(file);
+  });
+}
+
+/* ===== публикация ===== */
+$("#saveBtn").onclick = async () => {
+  if (!dirty) { status("Изменений нет", ""); return; }
+  const b = $("#saveBtn"); b.disabled = true;
+  try {
+    const used = new Set(D.TEAM.flatMap(d => d.imgs));
+    for (const [path, u] of Object.entries(uploads)) {
+      if (!used.has(path)) continue;
+      status("Загружаю фото…"); const bytes = new Uint8Array(await u.blob.arrayBuffer());
+      await putFile(path, bytesToB64(bytes), "Админка: новое фото " + path);
+    }
+    status("Сохраняю данные…");
+    const cur = await getFile(REPO.dataPath);
+    if (cur.sha !== SHA && !confirm("Файл данных изменился с момента входа (возможно, правили с другого устройства). Перезаписать?")) { b.disabled = false; status("Отменено", "bad"); return; }
+    const r = await putFile(REPO.dataPath, textToB64(buildDataJs()), "Админка: обновление данных сайта", cur.sha);
+    SHA = r.content.sha; dirty = false; uploads = {};
+    status("✓ Опубликовано. На сайте появится через 1–2 минуты (иногда до 10 минут из-за кэша).", "ok");
+  } catch (e) { status("Ошибка: " + e.message, "bad"); }
+  b.disabled = false;
+};
+</script>
+</body>
+</html>
