@@ -467,3 +467,26 @@ body.lock{overflow:hidden}
 .oms a{color:var(--green-d);font-weight:700;text-decoration:underline}
 .svc-note{font-size:14px;color:var(--muted);margin-top:26px}
 .svc-note a{text-decoration:underline;font-weight:700;color:var(--ink)}
+
+/* ---------- цены и акция */
+.prices{display:grid;grid-template-columns:240px 1fr;gap:56px;align-items:start;margin-top:10px}
+.price-cat{background:var(--paper);border:1px solid var(--line);border-radius:26px;padding:30px 34px;margin-bottom:16px;scroll-margin-top:100px}
+.price-cat h2{font-size:clamp(22px,2.6vw,30px);margin-bottom:10px}
+.price-row{display:flex;justify-content:space-between;gap:24px;padding:14px 0;border-top:1px solid var(--line);align-items:baseline}
+.price-row:first-child{border-top:0}
+.price-row span{font-size:16px}
+.price-row b{white-space:nowrap;font-size:16.5px}
+.promo-box{background:var(--ink) url(../img/svc-implant.jpg) right center/auto 100% no-repeat;color:#fff;border-radius:30px;padding:40px 44px;margin-bottom:40px;position:relative;overflow:hidden}
+.promo-box:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#14110e 45%,rgba(20,17,14,.55))}
+.promo-box>*{position:relative}
+.badge-promo{display:inline-block;background:#e2683c;color:#fff;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:999px;margin-bottom:14px}
+.promo-head h3{font-size:clamp(22px,2.8vw,34px);max-width:640px;margin-bottom:8px}
+.promo-head p{opacity:.7;margin-bottom:24px}
+.promo-items{display:grid;gap:10px;max-width:620px;margin-bottom:26px}
+.promo-items div{display:flex;justify-content:space-between;gap:20px;align-items:baseline;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px 18px}
+.promo-items b{font-family:Unbounded;font-size:clamp(16px,1.8vw,22px);color:var(--green-l);white-space:nowrap}
+.promo-box.compact{margin-bottom:0}
+.doc-list{margin:12px 0 26px}
+.doc-list li{font-size:15.5px}
+@media(max-width:960px){.prices{grid-template-columns:1fr;gap:20px}}
+@media(max-width:600px){.price-cat{padding:20px 18px;border-radius:20px}.price-row{flex-direction:column;gap:4px}.promo-box{padding:28px 20px;border-radius:24px;background-image:none}.promo-items div{flex-direction:column;gap:2px}.promo-box .btn{width:100%;white-space:normal}}

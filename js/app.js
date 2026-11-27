@@ -13,7 +13,15 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const svcById = id => SERVICES.find(s => s.id === id);
 const docById = id => TEAM.find(d => d.id === id);
-const DOCTORS = TEAM.filter(d => !d.admin);
+const DOCTORS = TEAM.filter(d => !d.staff);
+const plural = (n, a, b, c) => { const m = n % 10, h = n % 100; return m === 1 && h !== 11 ? a : m >= 2 && m <= 4 && (h < 10 || h >= 20) ? b : c; };
+const promoOn = () => typeof PROMO !== "undefined" && new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10) <= PROMO.until;
+function promoBlock(compact) {
+  if (!promoOn()) return "";
+  return `<div class="promo-box reveal${compact ? " compact" : ""}"><div class="promo-head"><span class="badge-promo">Акция</span><h3>${PROMO.title}</h3><p>${PROMO.note}. Консультация — бесплатно.</p></div>
+    <div class="promo-items">${PROMO.items.map(([t, p]) => `<div><span>${t}</span><b>${p}</b></div>`).join("")}</div>
+    <button class="btn btn-green" data-book data-service="implant">${IC.cal}Записаться на бесплатную консультацию</button></div>`;
+}
 const priceText = s => s.price || "После осмотра";
 const waLink = t => `https://wa.me/${SITE.wa}?text=${encodeURIComponent(t || "Здравствуйте! Хочу записаться на приём в стоматологию «Тагай».")}`;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -70,7 +78,7 @@ function svcCard(s) {
 }
 function docCard(d) {
   return `<a class="doc reveal" href="doctor.html?id=${d.id}" data-spec="${d.spec.join(" ")}">
-    <div class="doc-photo"><img src="${d.imgs[0]}" alt="${esc(d.name)}" loading="lazy"><span class="exp">Стаж ${d.exp}</span></div>
+    <div class="doc-photo"><img src="${d.imgs[0]}" alt="${esc(d.name)}" loading="lazy">${d.exp ? `<span class="exp">${d.expLabel || "Стаж"} ${d.exp}</span>` : ""}</div>
     <div class="doc-body"><div class="role">${d.role}</div><h3>${d.name}</h3>
     <div class="go"><span>Подробнее</span><span>→</span></div></div></a>`;
 }
@@ -89,7 +97,7 @@ function picker(el, startId) {
     $(".pick-info", el).innerHTML = `<span class="eyebrow ${el.classList.contains("light") ? "" : "l"}">Услуга ${s.n}</span><h3>${s.title}</h3><p>${s.text}</p>
       <ul class="ticks">${s.includes.map(x => `<li>${x}</li>`).join("")}</ul>
       <div class="pick-meta"><div><small>Стоимость</small><b>${priceText(s)}</b></div><div><small>Длительность</small><b>${s.time}</b></div></div>
-      <div class="who"><div class="avatars">${docs.map(d => `<img src="${d.imgs[0]}" alt="${esc(d.short)}" title="${esc(d.short)}">`).join("")}</div><span>Принимают ${docs.length} ${docs.length > 4 ? "врачей" : "врача"}</span></div>
+      <div class="who"><div class="avatars">${docs.map(d => `<img src="${d.imgs[0]}" alt="${esc(d.short)}" title="${esc(d.short)}">`).join("")}</div><span>${docs.length === 1 ? "Принимает " + docs[0].short : "Принимают " + docs.length + " " + plural(docs.length, "врач", "врача", "врачей")}</span></div>
       <div class="pick-btns"><button class="btn btn-green" data-book data-service="${s.id}">${IC.cal}Записаться</button>
       <a class="btn btn-ghost ${el.classList.contains("light") ? "" : "l"}" href="service.html?id=${s.id}">Подробнее</a></div>`;
   };
@@ -212,7 +220,7 @@ function modal() {
 /* ---------- шапка, подвал, кнопки */
 function chrome() {
   const page = { service: "services", doctor: "doctors" }[document.body.dataset.page] || document.body.dataset.page;
-  const nav = [["index", "Главная"], ["services", "Услуги"], ["doctors", "Врачи"], ["about", "О клинике"], ["patients", "Пациентам"], ["contacts", "Контакты"]];
+  const nav = [["services", "Услуги"], ["prices", "Цены"], ["doctors", "Врачи"], ["about", "О клинике"], ["patients", "Пациентам"], ["contacts", "Контакты"]];
   const logo = `<a class="logo" href="index.html" aria-label="Тагай — на главную"><span class="logo-mark">${IC.logo}</span><span><b>ТАГАЙ</b><small>стоматология</small></span></a>`;
   const dd = `<div class="dd"><div class="dd-grid">${SERVICES.map(s => `<a href="service.html?id=${s.id}"><img src="${s.img}" alt="" loading="lazy"><span><b>${s.title}</b><small>${s.tag}</small></span></a>`).join("")}</div><a class="dd-all" href="services.html">Все услуги →</a></div>`;
   const hdr = $("#hdr");
@@ -226,7 +234,7 @@ function chrome() {
 
   $("#ftr").innerHTML = `<div class="wrap"><div class="ftr-grid">
     <div>${logo}<p style="margin-top:20px;max-width:34ch">Стоматологическая клиника в Октябрьском районе Новосибирска. Лечим бережно, без боли и переплат.</p></div>
-    <div><h4>Разделы</h4>${nav.map(([p, t]) => `<a href="${p}.html">${t}</a>`).join("")}</div>
+    <div><h4>Разделы</h4><a href="index.html">Главная</a>${nav.map(([p, t]) => `<a href="${p}.html">${t}</a>`).join("")}</div>
     <div><h4>Услуги</h4>${SERVICES.map(s => `<a href="service.html?id=${s.id}">${s.title}</a>`).join("")}</div>
     <div><h4>Контакты</h4><a href="tel:${SITE.phone}">${SITE.phoneText}</a>${SITE.phones.map(([p, t]) => `<a href="tel:${p}">${t}</a>`).join("")}
       <a href="mailto:${SITE.email}">${SITE.email}</a><a href="${SITE.maps}" target="_blank" rel="noopener">${SITE.address}</a>
@@ -295,7 +303,14 @@ function contactsBlock(el) {
 
 /* ---------- страницы */
 const PAGES = {
+  prices() {
+    $("#promo").innerHTML = promoBlock();
+    $("#priceNav").innerHTML = PRICES.map((c, i) => `<a href="#pc${i}">${c.cat}</a>`).join("");
+    $("#priceList").innerHTML = PRICES.map((c, i) => `<div class="price-cat reveal" id="pc${i}"><h2>${c.cat}</h2>
+      <div class="price-rows">${c.items.map(([t, p]) => `<div class="price-row"><span>${t}</span><b>${p}</b></div>`).join("")}</div></div>`).join("");
+  },
   index() {
+    const pr = $("#promoHome"); if (pr) { pr.innerHTML = promoBlock(true); if (!pr.innerHTML) pr.closest("section").remove(); }
     picker($("#pick"));
     $("#strip").innerHTML = TEAM.map(docCard).join("");
     const st = $("#strip");
@@ -353,17 +368,20 @@ const PAGES = {
         ${d.imgs.length > 1 ? `<div class="thumbs">${d.imgs.map((s, i) => `<img src="${s}" data-i="${i}" class="${i ? "" : "on"}" alt="Фото ${i + 1}">`).join("")}</div>` : ""}</div>
       <div><span class="eyebrow">${d.role}</span><h1 style="font-size:clamp(30px,4vw,52px)">${d.name}</h1>
         ${d.alt ? `<p class="lead" style="margin-top:12px">${d.alt}</p>` : ""}
-        <div class="specs"><div><span>Стаж</span><b>${d.exp}</b></div><div><span>Специализация</span><b>${d.role}</b></div>
-          ${d.edu.length ? `<div style="grid-column:1/-1"><span>Образование</span><b>${d.edu.join(" · ")}</b></div>` : ""}</div>
+        ${d.about ? `<p class="lead" style="margin-top:14px">${d.about}</p>` : ""}
+        <div class="specs">${d.exp ? `<div><span>${d.expLabel || "Стаж"}</span><b>${d.exp}</b></div>` : ""}<div${d.exp ? "" : ' style="grid-column:1/-1"'}><span>Специализация</span><b>${d.role}</b></div></div>
+        ${d.edu.length ? `<h3>Образование</h3><ul class="ticks doc-list">${d.edu.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}
+        ${d.certs ? `<h3>Аккредитация и сертификаты</h3><ul class="ticks doc-list">${d.certs.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}
         ${d.admin ? `<p class="prose" style="font-size:18px;color:#3a332c;margin-bottom:30px">Дарья встретит вас в клинике, ответит на вопросы, подберёт удобное время и врача.</p>`
+          : d.staff ? `<p class="prose" style="font-size:18px;color:#3a332c;margin-bottom:30px">Ассистент помогает врачу на приёме и следит за стерильностью инструментов.</p>`
           : `<h3>Услуги врача</h3><div class="mini-svcs">${svcs.map(s => `<a href="service.html?id=${s.id}"><img src="${s.img}" alt=""><span>${s.title}</span><span>→</span></a>`).join("")}</div>`}
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-green" data-book ${d.admin ? "" : `data-doctor="${d.id}"`}>${IC.cal}${d.admin ? "Записаться на приём" : "Записаться к врачу"}</button>
+          <button class="btn btn-green" data-book ${d.staff ? "" : `data-doctor="${d.id}"`}>${IC.cal}${d.staff ? "Записаться на приём" : "Записаться к врачу"}</button>
           <a class="btn btn-ghost" href="tel:${SITE.phone}">${IC.tel}Позвонить</a></div>
       </div>`;
     $$(".thumbs img").forEach(t => t.onclick = () => { $("#mainimg").src = t.src; $$(".thumbs img").forEach(x => x.classList.toggle("on", x === t)); });
     $(".doctor-main").onclick = () => openLb(d.imgs, d.imgs.indexOf($("#mainimg").getAttribute("src")));
-    $("#others").innerHTML = TEAM.filter(x => x !== d && !x.admin).slice(0, 4).map(docCard).join("");
+    $("#others").innerHTML = TEAM.filter(x => x !== d && !x.staff).slice(0, 4).map(docCard).join("");
   },
   about() {
     const L = SITE.legal;
