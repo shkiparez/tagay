@@ -382,7 +382,7 @@ const PAGES = {
         <a class="btn btn-dark" href="${L.pdf}" target="_blank" rel="noopener" download>Скачать лицензию (PDF)</a>
       </div>`;
     $$("#lic figure").forEach(f => f.onclick = () => openLb(L.scans, +f.dataset.i));
-    mosaic($("#mosaic"), GALLERY, ["w2 h2", "", "", "h2", "", "", "w2", "", "", "h2", "w2", "", "w2 h2", "h2", "", "w2", "w2", "w2"]); },
+    mosaic($("#mosaic"), GALLERY, ["w2 h2", "", "", "", "", "w2", "", "", "", "", "", ""]); },
   patients() {
     const L = SITE.legal;
     $("#ptDocs").innerHTML = `

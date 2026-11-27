@@ -105,7 +105,6 @@ const SOON = 2; // сколько карточек «скоро» показыв
 const SPECS = { ortho: "Ортопеды", thera: "Терапевты", hyg: "Гигиенисты", admin: "Администрация" };
 
 const GALLERY = [
-  "img/team-hero.jpg", "img/team-group.jpg", "img/gal-1.jpg", "img/gal-3.jpg", "img/team-girls.jpg", "img/gal-2.jpg",
-  "img/gal-4.jpg", "img/gal-5.jpg", "img/gal-7.jpg", "img/gal-10.jpg", "img/gal-8.jpg", "img/gal-11.jpg",
-  "img/gal-14.jpg", "img/gal-9.jpg", "img/gal-12.jpg", "img/gal-13.jpg", "img/gal-6.jpg", "img/about.jpg",
+  "img/team-hero.jpg", "img/team-group.jpg", "img/gal-3.jpg", "img/team-girls.jpg", "img/gal-4.jpg", "img/gal-5.jpg",
+  "img/gal-7.jpg", "img/gal-8.jpg", "img/gal-11.jpg", "img/gal-9.jpg", "img/gal-13.jpg", "img/about.jpg",
 ];
