@@ -490,3 +490,14 @@ body.lock{overflow:hidden}
 .doc-list li{font-size:15.5px}
 @media(max-width:960px){.prices{grid-template-columns:1fr;gap:20px}}
 @media(max-width:600px){.price-cat{padding:20px 18px;border-radius:20px}.price-row{flex-direction:column;gap:4px}.promo-box{padding:28px 20px;border-radius:24px;background-image:none}.promo-items div{flex-direction:column;gap:2px}.promo-box .btn{width:100%;white-space:normal}}
+
+/* вакансии */
+.jobs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.job{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:32px;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.job h3{font-size:24px;margin:4px 0 0}
+.job p{color:var(--muted);margin:0;flex:1}
+.job .ticks{margin:4px 0}
+.job .btn{margin-top:10px}
+.job .btn svg{width:19px;height:19px}
+.badge-job{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#e6f4e7;color:var(--green-d);padding:6px 12px;border-radius:999px}
+@media(max-width:560px){.job{padding:24px}.job .btn{width:100%;justify-content:center}}

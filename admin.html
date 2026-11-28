@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Админка — стоматология «Тагай»</title>
-<link rel="stylesheet" href="css/fonts.css?v=24">
+<link rel="stylesheet" href="css/fonts.css?v=25">
 <style>
 :root{--ink:#14110e;--cream:#f4efe7;--paper:#fffdf9;--line:#e3dacb;--muted:#6f665b;--green:#3faa4a;--green-d:#2e8a38;--red:#c2402f;--r:16px}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -157,7 +157,7 @@ $("#logout").onclick = () => { if (dirty && !confirm("Есть неопубли�
 async function loadData() {
   const f = await getFile(REPO.dataPath); SHA = f.sha;
   const src = b64ToText(f.content);
-  D = new Function(src + "\n;return {SITE, SERVICES, PRICES: typeof PRICES!=='undefined'?PRICES:[], PROMO: typeof PROMO!=='undefined'?PROMO:null, TEAM, SOON, SPECS, GALLERY};")();
+  D = new Function(src + "\n;return {SITE, SERVICES, PRICES: typeof PRICES!=='undefined'?PRICES:[], PROMO: typeof PROMO!=='undefined'?PROMO:null, TEAM, SOON, SPECS, GALLERY, JOBS: typeof JOBS!=='undefined'?JOBS:[]};")();
   dirty = false; uploads = {};
 }
 function buildDataJs() {
@@ -180,6 +180,9 @@ const PROMO = ${J(D.PROMO)};
 /* Команда */
 const TEAM = ${J(D.TEAM)};
 const SOON = ${J(D.SOON)};
+
+/* Вакансии. Пустой список [] — блок на сайте скрывается */
+const JOBS = ${J(D.JOBS)};
 
 const SPECS = ${J(D.SPECS)};
 
@@ -209,7 +212,7 @@ function bind(root) {
 }
 
 /* ===== вкладки ===== */
-const TABS = { contacts: "Контакты и график", promo: "Акция", prices: "Цены", services: "Услуги", team: "Команда" };
+const TABS = { contacts: "Контакты и график", promo: "Акция", prices: "Цены", services: "Услуги", team: "Команда", jobs: "Вакансии" };
 function render() {
   $("#tabs").innerHTML = Object.entries(TABS).map(([k, t]) => `<button data-t="${k}" class="${k === tab ? "on" : ""}">${t}</button>`).join("");
   $("#tabs").querySelectorAll("button").forEach(b => b.onclick = () => { tab = b.dataset.t; render(); });
@@ -236,6 +239,11 @@ const VIEWS = {
     <button class="btn danger" id="delPromo">Удалить акцию</button>`
     : `<div class="card"><h2>Акции нет</h2><button class="btn green" id="newPromo">Создать акцию</button></div>`,
   prices: () => `<div id="cats"></div><button class="btn ghost" id="addCat">+ Раздел прайса</button>`,
+  jobs: () => `<div class="head-row" style="margin-bottom:16px"><h2 style="font-size:18px">Вакансии</h2><button class="btn green small" id="addJob">+ Вакансия</button></div>` +
+    (D.JOBS.length ? "" : `<div class="card">Вакансий нет — блок на сайте скрыт.</div>`) +
+    D.JOBS.map((j, i) => `<div class="card"><div class="head-row"><h2>${esc(j.title)}</h2><button class="btn small danger" data-deljob="${i}">Удалить</button></div>
+      <div class="grid g2">${field("Должность", `JOBS.${i}.title`)}${area("Описание", `JOBS.${i}.text`)}</div>
+      <div class="grid" style="margin-top:12px">${area("Требования / условия (каждый пункт с новой строки, можно пусто)", `JOBS.${i}.items`, "data-lines")}</div></div>`).join(""),
   services: () => D.SERVICES.map((s, i) => `
     <div class="card"><div class="head-row"><h2>${esc(s.n)} · ${esc(s.title)}</h2></div><div class="grid g4">
       ${field("Название", `SERVICES.${i}.title`)}${field("Цена", `SERVICES.${i}.price`, "data-nullable", "пусто = «После осмотра»")}${field("Длительность", `SERVICES.${i}.time`)}${field("Метка", `SERVICES.${i}.tag`)}</div>
@@ -264,6 +272,10 @@ const VIEWS = {
 };
 
 const AFTER = {
+  jobs(p) {
+    $("#addJob").onclick = () => { D.JOBS.push({ title: "Новая вакансия", text: "", items: [] }); markDirty(); render(); };
+    p.querySelectorAll("[data-deljob]").forEach(b => b.onclick = () => { if (!confirm("Удалить вакансию?")) return; D.JOBS.splice(+b.dataset.deljob, 1); markDirty(); render(); });
+  },
   contacts(p) {
     const drawPhones = () => {
       $("#phones").innerHTML = D.SITE.phones.map((ph, i) => `<div class="line" style="grid-template-columns:1fr 1fr auto"><input data-k="SITE.phones.${i}.1" placeholder="+7 (383) 255-55-04"><input data-k="SITE.phones.${i}.0" placeholder="+73832555504"><button class="btn small danger" data-i="${i}">✕</button></div>`).join("") || '<div class="hint">Нет</div>';

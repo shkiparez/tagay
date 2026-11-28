@@ -234,7 +234,7 @@ function chrome() {
 
   $("#ftr").innerHTML = `<div class="wrap"><div class="ftr-grid">
     <div>${logo}<p style="margin-top:20px;max-width:34ch">Стоматологическая клиника в Октябрьском районе Новосибирска. Лечим бережно, без боли и переплат.</p></div>
-    <div><h4>Разделы</h4><a href="index.html">Главная</a>${nav.map(([p, t]) => `<a href="${p}.html">${t}</a>`).join("")}</div>
+    <div><h4>Разделы</h4><a href="index.html">Главная</a>${nav.map(([p, t]) => `<a href="${p}.html">${t}</a>`).join("")}${typeof JOBS !== "undefined" && JOBS.length ? `<a href="about.html#jobs">Вакансии</a>` : ""}</div>
     <div><h4>Услуги</h4>${SERVICES.map(s => `<a href="service.html?id=${s.id}">${s.title}</a>`).join("")}</div>
     <div><h4>Контакты</h4><a href="tel:${SITE.phone}">${SITE.phoneText}</a>${SITE.phones.map(([p, t]) => `<a href="tel:${p}">${t}</a>`).join("")}
       <a href="mailto:${SITE.email}">${SITE.email}</a><a href="${SITE.maps}" target="_blank" rel="noopener">${SITE.address}</a>
@@ -401,7 +401,15 @@ const PAGES = {
         <a class="btn btn-dark" href="${L.pdf}" target="_blank" rel="noopener" download>Скачать лицензию (PDF)</a>
       </div>`;
     $$("#lic figure").forEach(f => f.onclick = () => openLb(L.scans, +f.dataset.i));
-    mosaic($("#mosaic"), GALLERY, ["w2 h2", "", "", "", "", "w2", "", "", "", "", "", ""]); },
+    mosaic($("#mosaic"), GALLERY, ["w2 h2", "", "", "", "", "w2", "", "", "", "", "", ""]);
+    const jobs = typeof JOBS !== "undefined" ? JOBS : [];
+    if (!jobs.length) $("#jobs").remove();
+    else {
+      $("#jobList").innerHTML = jobs.map(j => `<div class="job reveal"><span class="badge-job">Ищем в команду</span><h3>${esc(j.title)}</h3>
+        ${j.text ? `<p>${esc(j.text)}</p>` : ""}${j.items && j.items.length ? `<ul class="ticks">${j.items.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+        <a class="btn btn-green" href="${waLink(`Здравствуйте! Хочу откликнуться на вакансию «${j.title}» в стоматологии «Тагай».`)}" target="_blank" rel="noopener">${IC.wa}Связаться в WhatsApp</a></div>`).join("");
+      if (location.hash === "#jobs") setTimeout(() => $("#jobs").scrollIntoView(), 50);
+    } },
   patients() {
     const L = SITE.legal;
     $("#ptDocs").innerHTML = `
